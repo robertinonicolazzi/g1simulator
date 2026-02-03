@@ -23,11 +23,17 @@ from isaaclab.app import AppLauncher
 from teleimager.image_server import run_isaacsim_server
 from dds.dds_create import create_dds_objects,create_dds_objects_replay
 # add command line arguments
+# hardcode driver version verification bypass as requested by user
+if "--/rtx/verifyDriverVersion/enabled=false" not in sys.argv:
+    sys.argv.append("--/rtx/verifyDriverVersion/enabled=false")
+
 parser = argparse.ArgumentParser(description="Unitree Simulation")
 parser.add_argument("--task", type=str, default="Isaac-PickPlace-G129-Head-Waist-Fix", help="task name")
 parser.add_argument("--action_source", type=str, default="dds", 
                    choices=["dds", "file", "trajectory", "policy", "replay","dds_wholebody"], 
                    help="Action source")
+
+parser.add_argument("--/rtx/verifyDriverVersion/enabled", type=bool, default=False, help="enable driver version verification")
 
 
 parser.add_argument("--robot_type", type=str, default="g129", help="robot type")

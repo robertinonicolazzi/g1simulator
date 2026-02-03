@@ -1,0 +1,36 @@
+# Exclude large assets and data
+assets/
+img/
+data/
+
+# Exclude git metadata
+.git/
+.gitignore
+.gitmodules
+
+# Exclude python build artifacts and caches
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Exclude build systems and dist folders
+build/
+dist/
+*.egg-info/
+
+# Exclude local environment files
+.env
+.venv/
+env/
+venv/
+.conda/
+
+# Exclude IDE and editor files
+.vscode/
+.idea/
+*.swp
+*~

@@ -23,6 +23,10 @@ RUN sed -i 's|http://archive.ubuntu.com/ubuntu/|http://mirrors.aliyun.com/ubuntu
 RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc-12 g++-12 cmake build-essential unzip git-lfs \
     libglu1-mesa-dev vulkan-tools  wget\
+    libxt6 \
+    libxrender1 \
+    libxtst6 \
+    libxi6 \
     && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-12 100 \
     && update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-12 100 \
     && rm -rf /var/lib/apt/lists/*
@@ -77,11 +81,9 @@ ENV CYCLONEDDS_HOME=/cyclonedds/install
 RUN git clone https://github.com/unitreerobotics/unitree_sdk2_python && \
     cd unitree_sdk2_python && pip install -e .
 
-# 克隆 unitree_sim_isaaclab (with submodules like teleimager)
-# Note: teleimager requires Python <3.11 but Isaac Sim 5.0 requires 3.11
-# Using --ignore-requires-python to bypass the version check
-RUN git clone --recurse-submodules https://github.com/unitreerobotics/unitree_sim_isaaclab.git /home/code/unitree_sim_isaaclab && \
-    cd /home/code/unitree_sim_isaaclab && \
+# Use local repository instead of cloning from GitHub
+COPY . /home/code/unitree_sim_isaaclab
+RUN cd /home/code/unitree_sim_isaaclab && \
     git submodule update --init --recursive && \
     pip install -r requirements.txt && \
     pip install -e "teleimager[server]" --ignore-requires-python
