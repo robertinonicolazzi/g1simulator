@@ -77,9 +77,22 @@ ENV CYCLONEDDS_HOME=/cyclonedds/install
 RUN git clone https://github.com/unitreerobotics/unitree_sdk2_python && \
     cd unitree_sdk2_python && pip install -e .
 
-# 克隆 unitree_sim_isaaclab
-RUN git clone https://github.com/unitreerobotics/unitree_sim_isaaclab.git /home/code/unitree_sim_isaaclab && \
-    cd /home/code/unitree_sim_isaaclab && pip install -r requirements.txt
+# 克隆 unitree_sim_isaaclab (with submodules like teleimager)
+# Note: teleimager requires Python <3.11 but Isaac Sim 5.0 requires 3.11
+# Using --ignore-requires-python to bypass the version check
+RUN git clone --recurse-submodules https://github.com/unitreerobotics/unitree_sim_isaaclab.git /home/code/unitree_sim_isaaclab && \
+    cd /home/code/unitree_sim_isaaclab && \
+    git submodule update --init --recursive && \
+    pip install -r requirements.txt && \
+    pip install -e "teleimager[server]" --ignore-requires-python
+
+# Pre-accept NVIDIA Omniverse EULA (creates acceptance file)
+# This avoids interactive prompt on first run
+RUN mkdir -p /root/.nvidia-omniverse/config /root/.local/share/ov/data/Kit && \
+    echo 'eula_accepted = true' > /root/.nvidia-omniverse/config/privacy.toml && \
+    echo 'privacy_consent = true' >> /root/.nvidia-omniverse/config/privacy.toml && \
+    echo '{"eula_accepted": true}' > /root/.local/share/ov/data/Kit/user.config.json && \
+    (echo "Yes" | timeout 30 python -c "import isaacsim" 2>/dev/null || true)
 
 
 # ==============================
@@ -92,9 +105,12 @@ ENV TZ=Asia/Shanghai
 ENV CONDA_DIR=/opt/conda
 ENV PATH=$CONDA_DIR/bin:$PATH
 
-# 禁止 Isaac Sim 自动启动
+# Isaac Sim configuration
 ENV OMNI_KIT_ALLOW_ROOT=1
 ENV OMNI_KIT_DISABLE_STARTUP=1
+# Accept NVIDIA Omniverse EULA for unattended operation
+ENV ACCEPT_EULA=Y
+ENV PRIVACY_CONSENT=Y
 
 # 安装运行时依赖
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -109,6 +125,9 @@ COPY --from=builder /cyclonedds /cyclonedds
 COPY --from=builder /opt/conda /opt/conda
 COPY --from=builder /home/code/unitree_sim_isaaclab /home/code/unitree_sim_isaaclab
 
+# Copy NVIDIA Omniverse config (EULA acceptance)
+COPY --from=builder /root/.nvidia-omniverse /root/.nvidia-omniverse
+COPY --from=builder /root/.local/share/ov /root/.local/share/ov
 
 ENV CYCLONEDDS_HOME=/cyclonedds/install
 
@@ -116,7 +135,9 @@ ENV CYCLONEDDS_HOME=/cyclonedds/install
 RUN echo 'source /opt/conda/etc/profile.d/conda.sh' >> ~/.bashrc && \
     echo 'conda activate unitree_sim_env' >> ~/.bashrc && \
     echo 'export OMNI_KIT_ALLOW_ROOT=1' >> ~/.bashrc && \
-    echo 'export OMNI_KIT_DISABLE_STARTUP=1' >> ~/.bashrc
+    echo 'export OMNI_KIT_DISABLE_STARTUP=1' >> ~/.bashrc && \
+    echo 'export ACCEPT_EULA=Y' >> ~/.bashrc && \
+    echo 'export PRIVACY_CONSENT=Y' >> ~/.bashrc
 
 WORKDIR /home/code
 
