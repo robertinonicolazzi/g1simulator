@@ -82,12 +82,11 @@ RUN git clone https://github.com/unitreerobotics/unitree_sdk2_python && \
     cd unitree_sdk2_python && pip install -e .
 
 # Use local repository instead of cloning from GitHub
-COPY . /home/code/unitree_sim_isaaclab
-RUN cd /home/code/unitree_sim_isaaclab && \
+RUN git clone --recurse-submodules https://github.com/robertinonicolazzi/g1simulator.git /home/code/unitree_sim_isaaclab && \
+    cd /home/code/unitree_sim_isaaclab && \
     git submodule update --init --recursive && \
     pip install -r requirements.txt && \
     pip install -e "teleimager[server]" --ignore-requires-python
-
 # Pre-accept NVIDIA Omniverse EULA (creates acceptance file)
 # This avoids interactive prompt on first run
 RUN mkdir -p /root/.nvidia-omniverse/config /root/.local/share/ov/data/Kit && \
