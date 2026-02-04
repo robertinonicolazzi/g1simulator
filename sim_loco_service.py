@@ -53,29 +53,42 @@ class SimLocoService:
         self.Move(0.0, 0.0, 0.0)
         return 0
 
+    def _handle_set_velocity(self, parameter: str):
+        """
+        Handler for ROBOT_API_ID_LOCO_SET_VELOCITY (7105)
+        Parameter is a JSON string: {"velocity": [vx, vy, omega], "duration": ...}
+        """
+        try:
+            data = json.loads(parameter)
+            velocity = data.get("velocity", [0.0, 0.0, 0.0])
+            vx = float(velocity[0])
+            vy = float(velocity[1])
+            omega = float(velocity[2])
+            
+            self.Move(vx, vy, omega)
+            return 0, "" # Return code 0 (OK) and empty data string
+        except Exception as e:
+            print(f"[SimLoco] Error handling SetVelocity: {e}")
+            return -1, ""
+
     def start_rpc_server(self):
         """Initializes and starts the RPC server."""
         # Initialize SDK [Source 14]
-        # Use loopback for local simulation
         print("[SimLoco] Initialize SDK")
         ChannelFactoryInitialize(0, "lo")
         print("[SimLoco] Initialize SDK done") 
 
-        # Create RPC Server [Source 77]
-        # 'loco' is the channel name G1 LocoClient expects
+        # Create RPC Server
+        # Use simple Server class which allows registering handlers by ID
         print("[SimLoco] Create RPC Server")
-        self.server = Server(ChannelFactoryInitialize(0, "lo")) 
+        self.server = Server("sport") 
         print("[SimLoco] Create RPC Server done")
         
-        # Create Stub and register the API name "LocoApi"
-        # This string "LocoApi" MUST match what is defined in unitree_sdk2py/g1/loco/g1_loco_client.py
-        print("[SimLoco] Create Stub")
-        self.stub = ServerStub("sport", self.server)
-        print("[SimLoco] Create Stub done")
-        
-        # Register methods
-        self.stub.AddMethod("Move", self.Move)
-        self.stub.AddMethod("Stop", self.Stop)
+        # Register Handler for SetVelocity (ID 7105)
+        # 7105 is ROBOT_API_ID_LOCO_SET_VELOCITY as per SDK
+        ROBOT_API_ID_LOCO_SET_VELOCITY = 7105
+        self.server._RegistHandler(ROBOT_API_ID_LOCO_SET_VELOCITY, self._handle_set_velocity, False)
+        print(f"[SimLoco] Registered handler for ID {ROBOT_API_ID_LOCO_SET_VELOCITY}")
         
         # Start Server
         print("[SimLoco] Start Server")
