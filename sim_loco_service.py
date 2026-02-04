@@ -16,7 +16,7 @@ class SimLocoService:
     def __init__(self):
         # Initialize SDK first to ensure DDS participant exists [Source 14]
         print("[SimLoco] Initialize SDK")
-        ChannelFactoryInitialize(0, "lo")
+        ChannelFactoryInitialize(0, "ens5")
         print("[SimLoco] Initialize SDK done")
 
         # 1. Initialize DDS Publisher [Source 13, 17]
