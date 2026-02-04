@@ -45,10 +45,9 @@ class LidarDDS(DDSObject):
                 return
 
             # Header
-            header = Header_()
-            header.frame_id = frame_id
             now = time.time()
-            header.stamp = Time_(sec=int(now), nanosec=int((now - int(now)) * 1e9))
+            stamp = Time_(int(now), int((now - int(now)) * 1e9))
+            header = Header_(stamp, frame_id)
 
             # PointCloud2 fields
             height = 1
@@ -58,9 +57,9 @@ class LidarDDS(DDSObject):
             # PointField (name, offset, datatype, count)
             # FLOAT32 = 7
             fields = [
-                PointField_(name="x", offset=0, datatype=7, count=1),
-                PointField_(name="y", offset=4, datatype=7, count=1),
-                PointField_(name="z", offset=8, datatype=7, count=1)
+                PointField_("x", 0, 7, 1),
+                PointField_("y", 4, 7, 1),
+                PointField_("z", 8, 7, 1)
             ]
             
             is_bigendian = False
