@@ -50,6 +50,7 @@ class ObjectTableSceneCfg(TableCylinderSceneCfgWH):
     right_wrist_camera = CameraPresets.right_gripper_wrist_camera()
     robot_camera = CameraPresets.g1_world_camera()
     # 7. add lidar configuration
+    lidar = SensorPresets.livox_mid360()
 ##
 # MDP settings
 ##
