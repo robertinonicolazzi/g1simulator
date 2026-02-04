@@ -16,9 +16,22 @@ class LidarDDS(DDSObject):
     def __init__(self, node_name: str = "lidar"):
         super().__init__()
         self.node_name = node_name
+        self.cmd_pub = None
+
+    def setup_publisher(self):
         self.cmd_pub = ChannelPublisher("rt/utlidar/cloud_livox_mid360", PointCloud2_)
         self.cmd_pub.Init()
         print(f"[{self.node_name}] Lidar publisher initialized on 'rt/utlidar/cloud_livox_mid360'")
+
+    def setup_subscriber(self):
+        pass
+
+    def dds_publisher(self):
+        # Publishing is handled manually in sim_main.py to synchronize with physics steps
+        pass
+
+    def dds_subscriber(self, msg, datatype=None):
+        pass
 
     def publish(self, points, frame_id="livox_frame"):
         """
