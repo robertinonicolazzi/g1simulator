@@ -14,6 +14,11 @@ class SimLocoService:
     to the simulation via DDS, mimicking the logic in dds_ros2_bridge.
     """
     def __init__(self):
+        # Initialize SDK first to ensure DDS participant exists [Source 14]
+        print("[SimLoco] Initialize SDK")
+        ChannelFactoryInitialize(0, "lo")
+        print("[SimLoco] Initialize SDK done")
+
         # 1. Initialize DDS Publisher [Source 13, 17]
         # The simulation listens to this specific topic for velocity commands
         self.cmd_pub = ChannelPublisher("rt/run_command/cmd", String_)
@@ -73,11 +78,7 @@ class SimLocoService:
 
     def start_rpc_server(self):
         """Initializes and starts the RPC server."""
-        # Initialize SDK [Source 14]
-        print("[SimLoco] Initialize SDK")
-        ChannelFactoryInitialize(0, "lo")
-        print("[SimLoco] Initialize SDK done") 
-
+        
         # Create RPC Server
         # Use simple Server class which allows registering handlers by ID
         print("[SimLoco] Create RPC Server")
