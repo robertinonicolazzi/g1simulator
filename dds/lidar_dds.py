@@ -44,44 +44,46 @@ class LidarDDS(DDSObject):
             if points is None or len(points) == 0:
                 return
 
-            msg = PointCloud2_()
-            
             # Header
-            msg.header = Header_()
-            msg.header.frame_id = frame_id
+            header = Header_()
+            header.frame_id = frame_id
             now = time.time()
-            msg.header.stamp = Time_(sec=int(now), nanosec=int((now - int(now)) * 1e9))
+            header.stamp = Time_(sec=int(now), nanosec=int((now - int(now)) * 1e9))
 
             # PointCloud2 fields
-            msg.height = 1
-            msg.width = len(points)
+            height = 1
+            width = len(points)
             
             # Define fields: x, y, z (float32)
             # PointField (name, offset, datatype, count)
             # FLOAT32 = 7
-            msg.fields = [
+            fields = [
                 PointField_(name="x", offset=0, datatype=7, count=1),
                 PointField_(name="y", offset=4, datatype=7, count=1),
                 PointField_(name="z", offset=8, datatype=7, count=1)
             ]
             
-            msg.is_bigendian = False
-            msg.point_step = 12 # 3 * 4 bytes
-            msg.row_step = msg.point_step * msg.width
-            msg.is_dense = True
+            is_bigendian = False
+            point_step = 12 # 3 * 4 bytes
+            row_step = point_step * width
+            is_dense = True
             
             # Convert to bytes
             # Ensure points are float32
             points_f32 = points.astype(np.float32)
-            msg.data = points_f32.tobytes() # returns list[int] or bytes? 
-            # SDK msg.data is usually list[int] (sequence<uint8>)
-            # In Python SDK dds_, it often expects list of ints or bytes depending on implementation.
-            # Step 120 (sdk_repo.md) shows String_ using str.
-            # PointCloud2_ data is 'sequence<uint8>'.
-            # Let's try passing list(msg.data) if bytes fail, or check example.
-            # example/b2/camera/camera_opencv.py uses np.frombuffer(data, dtype=np.uint8) on RECEIVE.
-            # So send should be bytes or list of uint8.
-            msg.data = list(points_f32.tobytes())
+            data = list(points_f32.tobytes())
+
+            msg = PointCloud2_(
+                header,
+                height,
+                width,
+                fields,
+                is_bigendian,
+                point_step,
+                row_step,
+                data,
+                is_dense
+            )
 
             self.cmd_pub.Write(msg)
             
