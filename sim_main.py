@@ -543,19 +543,25 @@ def main():
                 controller.step()
 
                 # Check for Lidar data and publish
-                if not args_cli.replay_data and "lidar" in env.scene.sensors:
-                    try:
-                        lidar_sensor = env.scene.sensors["lidar"]
-                        # Get point cloud (ray hits world frame)
-                        # ray_hits_w shape: (num_envs, num_rays, 3)
-                        point_cloud = lidar_sensor.data.ray_hits_w[0] # Env 0
-                        if point_cloud is not None:
-                             # Filter out hits at origin or max range if needed, 
-                             # but LidarDDS can handle raw or let user handle.
-                             # Publishing raw points.
-                             lidar_dds.publish(point_cloud.cpu().numpy(), frame_id="livox_frame")
-                    except Exception as e:
-                        pass # Suppress lidar errors to avoid crashing sim
+                if not args_cli.replay_data:
+                    if "lidar" in env.scene.sensors:
+                        try:
+                            lidar_sensor = env.scene.sensors["lidar"]
+                            # Get point cloud (ray hits world frame)
+                            # ray_hits_w shape: (num_envs, num_rays, 3)
+                            point_cloud = lidar_sensor.data.ray_hits_w[0] # Env 0
+                            
+                            # print(f"Lidar sensor data: {point_cloud.shape if point_cloud is not None else 'None'}")
+
+                            if point_cloud is not None:
+                                 # Filter out hits at origin or max range if needed, 
+                                 # but LidarDDS can handle raw or let user handle.
+                                 # Publishing raw points.
+                                 lidar_dds.publish(point_cloud.cpu().numpy(), frame_id="livox_frame")
+                        except Exception as e:
+                            print(f"Lidar publishing error: {e}")
+                    # else:
+                         # print("Lidar sensor not found in env.scene.sensors")
 
                 # print statistics and loop frequency periodically
                 if current_time - last_stats_time >= args_cli.stats_interval:

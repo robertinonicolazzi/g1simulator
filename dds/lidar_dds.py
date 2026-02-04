@@ -19,6 +19,7 @@ class LidarDDS(DDSObject):
         self.cmd_pub = None
 
     def setup_publisher(self):
+        print(f"[{self.node_name}] Setting up publisher...")
         self.cmd_pub = ChannelPublisher("rt/utlidar/cloud_livox_mid360", PointCloud2_)
         self.cmd_pub.Init()
         print(f"[{self.node_name}] Lidar publisher initialized on 'rt/utlidar/cloud_livox_mid360'")
@@ -41,7 +42,13 @@ class LidarDDS(DDSObject):
             frame_id: frame ID for the header
         """
         try:
+            # print(f"[{self.node_name}] Publish called with points: {len(points) if points is not None else 'None'}")
             if points is None or len(points) == 0:
+                print(f"[{self.node_name}] Warning: Empty point cloud received")
+                return
+
+            if self.cmd_pub is None:
+                print(f"[{self.node_name}] Error: Publisher not initialized!")
                 return
 
             # Header
