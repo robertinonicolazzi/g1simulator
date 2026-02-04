@@ -32,5 +32,5 @@ class SensorPresets:
                 horizontal_res=0.2, # Approximate resolution
             ),
             debug_vis=False,
-            mesh_prim_paths=["/World/envs/env_.*/PackingTable_1"], # Detect room walls
+            mesh_prim_paths=["/World/envs/env_0/PackingTable_2/PackingTable_2/container_h20/container_h20_inst/Container_H20_01"], # Detect room walls
         )
