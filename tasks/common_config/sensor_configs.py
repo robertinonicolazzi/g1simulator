@@ -32,5 +32,5 @@ class SensorPresets:
                 horizontal_res=0.2, # Approximate resolution
             ),
             debug_vis=False,
-            mesh_prim_paths=["/World/envs/env_.*/Object"], # Objects to detect
+            mesh_prim_paths=[], # Objects to detect - empty allows default collision with all colliders
         )
