@@ -388,7 +388,7 @@ def main():
         print("========= create image server success =========")
         print("========= create dds =========")
         try:
-            reset_pose_dds,sim_state_dds,dds_manager = create_dds_objects(args_cli,env)
+            reset_pose_dds,sim_state_dds,dds_manager,lidar_dds = create_dds_objects(args_cli,env)
         except Exception as e:
             print(f"Failed to create dds: {e}")
             return
@@ -541,6 +541,21 @@ def main():
                 
                 # execute control step (in main thread, support rendering)
                 controller.step()
+
+                # Check for Lidar data and publish
+                if not args_cli.replay_data and "lidar" in env.scene.sensors:
+                    try:
+                        lidar_sensor = env.scene.sensors["lidar"]
+                        # Get point cloud (ray hits world frame)
+                        # ray_hits_w shape: (num_envs, num_rays, 3)
+                        point_cloud = lidar_sensor.data.ray_hits_w[0] # Env 0
+                        if point_cloud is not None:
+                             # Filter out hits at origin or max range if needed, 
+                             # but LidarDDS can handle raw or let user handle.
+                             # Publishing raw points.
+                             lidar_dds.publish(point_cloud.cpu().numpy(), frame_id="livox_frame")
+                    except Exception as e:
+                        pass # Suppress lidar errors to avoid crashing sim
 
                 # print statistics and loop frequency periodically
                 if current_time - last_stats_time >= args_cli.stats_interval:

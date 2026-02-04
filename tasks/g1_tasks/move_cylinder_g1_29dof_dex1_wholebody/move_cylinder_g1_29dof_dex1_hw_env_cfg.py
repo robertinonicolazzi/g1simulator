@@ -21,6 +21,7 @@ from . import mdp
 # use Isaac Lab native event system
 
 from tasks.common_config import  G1RobotPresets, CameraPresets  # isort: skip
+from tasks.common_config.sensor_configs import SensorPresets
 from tasks.common_event.event_manager import SimpleEvent, SimpleEventManager
 
 # import public scene configuration
@@ -48,6 +49,8 @@ class ObjectTableSceneCfg(TableCylinderSceneCfgWH):
     left_wrist_camera = CameraPresets.left_gripper_wrist_camera()
     right_wrist_camera = CameraPresets.right_gripper_wrist_camera()
     robot_camera = CameraPresets.g1_world_camera()
+    # 7. add lidar configuration
+    lidar = SensorPresets.livox_mid360()
 ##
 # MDP settings
 ##

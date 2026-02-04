@@ -49,10 +49,16 @@ def create_dds_objects(args_cli,env):
     rewards_dds = RewardsDDS(env,args_cli.task)
     dds_manager.register_object("rewards", rewards_dds)
     publish_names.append("rewards")
-
+    
+    from dds.lidar_dds import LidarDDS
+    lidar_dds = LidarDDS()
+    # lidar_dds registered to manager? Optional if we manage it manually in sim_main
+    # But dds_manager manages steps? No, dds_publisher calls.
+    # We'll return it to manually call publish in sim_main loop.
+    
     dds_manager.start_publishing(publish_names)
     dds_manager.start_subscribing(subscribe_names)
-    return reset_pose_dds,sim_state_dds,dds_manager
+    return reset_pose_dds,sim_state_dds,dds_manager,lidar_dds
 
 def create_dds_objects_replay(args_cli,env):
     publish_names = []
