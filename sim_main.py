@@ -109,9 +109,6 @@ from dds.reset_pose_dds import *
 import tasks
 from isaaclab_tasks.utils.parse_cfg import parse_env_cfg
 
-# Import SimLocoBridge
-from sim_loco_service import SimLocoService
-
 from tools.augmentation_utils import (
     update_light,
     batch_augment_cameras_by_name,
@@ -448,10 +445,6 @@ def main():
         setup_signal_handlers(controller,dds_manager,image_server)
     else:
         setup_signal_handlers(controller)
-
-    # Initialize and start SimLocoService
-    loco_service = SimLocoService()
-    loco_service.start_rpc_server()
         
     print("Note: The DDS in Sim transmits messages on channel 1. Please ensure that other DDS instances use the same channel for message exchange by setting: ChannelFactoryInitialize(0).")
     try:

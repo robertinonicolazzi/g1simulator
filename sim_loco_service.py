@@ -57,20 +57,34 @@ class SimLocoService:
         """Initializes and starts the RPC server."""
         # Initialize SDK [Source 14]
         # Use loopback for local simulation
-        ChannelFactoryInitialize(0, "lo") 
+        print("[SimLoco] Initialize SDK")
+        ChannelFactoryInitialize(0, "lo")
+        print("[SimLoco] Initialize SDK done") 
 
         # Create RPC Server [Source 77]
         # 'loco' is the channel name G1 LocoClient expects
+        print("[SimLoco] Create RPC Server")
         self.server = Server(ChannelFactoryInitialize(0, "lo")) 
+        print("[SimLoco] Create RPC Server done")
         
         # Create Stub and register the API name "LocoApi"
         # This string "LocoApi" MUST match what is defined in unitree_sdk2py/g1/loco/g1_loco_client.py
+        print("[SimLoco] Create Stub")
         self.stub = ServerStub("sport", self.server)
+        print("[SimLoco] Create Stub done")
         
         # Register methods
         self.stub.AddMethod("Move", self.Move)
         self.stub.AddMethod("Stop", self.Stop)
         
         # Start Server
+        print("[SimLoco] Start Server")
         self.server.Start()
         print("[SimLoco] RPC Server is running. LocoClient can now connect.")
+
+if __name__ == "__main__":
+    service = SimLocoService()
+    service.start_rpc_server()
+    while True:
+        time.sleep(1)
+
