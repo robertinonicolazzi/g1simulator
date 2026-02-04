@@ -52,9 +52,8 @@ def create_dds_objects(args_cli,env):
     
     from dds.lidar_dds import LidarDDS
     lidar_dds = LidarDDS()
-    # lidar_dds registered to manager? Optional if we manage it manually in sim_main
-    # But dds_manager manages steps? No, dds_publisher calls.
-    # We'll return it to manually call publish in sim_main loop.
+    dds_manager.register_object("lidar", lidar_dds)
+    publish_names.append("lidar")
     
     dds_manager.start_publishing(publish_names)
     dds_manager.start_subscribing(subscribe_names)
