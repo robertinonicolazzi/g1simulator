@@ -21,7 +21,7 @@ class SensorPresets:
         - 10Hz update rate
         """
         return RayCasterCfg(
-            prim_path="/World/envs/env_.*/Robot/d435_link/lidar",
+            prim_path="/World/envs/env_.*/Robot/mid360_link/lidar",
             update_period=0.1, # 10Hz
             offset=RayCasterCfg.OffsetCfg(pos=(0.0, 0.0, 0.1)), # Offset from head link
             attach_yaw_only=False,
