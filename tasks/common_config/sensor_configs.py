@@ -32,5 +32,5 @@ class SensorPresets:
                 horizontal_res=0.2, # Approximate resolution
             ),
             debug_vis=False,
-            mesh_prim_paths=["/World/envs/env_.*/Room"], # Detect room walls
+            mesh_prim_paths=["/World/defaultGroundPlane"], # Detect ground plane
         )
