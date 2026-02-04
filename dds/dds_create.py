@@ -5,7 +5,9 @@ from dds.dds_master import dds_manager
 def create_dds_objects(args_cli,env):
     publish_names = []
     subscribe_names = []
+    print(f"DEBUG: robot_type='{args_cli.robot_type}'")
     if args_cli.robot_type=="g129" or args_cli.robot_type=="h1_2":
+        print(f"DEBUG: Entering G1RobotDDS creation block for {args_cli.robot_type}")
         from dds.g1_robot_dds import G1RobotDDS
         g1_robot = G1RobotDDS()
         dds_manager.register_object("g129", g1_robot)
