@@ -544,6 +544,10 @@ def main():
 
                 # Check for Lidar data and publish
                 if not args_cli.replay_data:
+                    # Debug: Print available sensors once or periodically
+                    # if loop_count % 100 == 0:
+                    #     print(f"Available sensors: {env.scene.sensors.keys()}")
+                    
                     if "lidar" in env.scene.sensors:
                         try:
                             lidar_sensor = env.scene.sensors["lidar"]
