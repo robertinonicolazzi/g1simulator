@@ -1,6 +1,7 @@
 # Copyright (c) 2025, Unitree Robotics Co., Ltd. All Rights Reserved.
 # License: Apache License, Version 2.0
 import time
+import os
 import threading
 from typing import Dict, List, Optional
 from unitree_sdk2py.core.channel import ChannelFactoryInitialize
@@ -57,7 +58,9 @@ class DDSManager:
             return True
         
         try:
-            ChannelFactoryInitialize(0)
+            domain_id = int(os.environ.get("DDS_CHANNEL", 0))
+            print(f"[DDSManager] Initializing DDS with domain_id={domain_id} (env: DDS_CHANNEL)")
+            ChannelFactoryInitialize(domain_id)
             self.dds_initialized = True
             print("[DDSManager] DDS system initialized")
             return True
