@@ -60,7 +60,7 @@ class DDSManager:
         try:
             domain_id = int(os.environ.get("DDS_CHANNEL", 0))
             print(f"[DDSManager] Initializing DDS with domain_id={domain_id} (env: DDS_CHANNEL)")
-            ChannelFactoryInitialize(domain_id)
+            ChannelFactoryInitialize(domain_id,"ens5")
             self.dds_initialized = True
             print("[DDSManager] DDS system initialized")
             return True
