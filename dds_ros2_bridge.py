@@ -222,7 +222,7 @@ class DdsRos2Bridge:
     def _init_dds(self):
         """Initialize Unitree DDS communication"""
         print("[DDS-ROS2 Bridge] Initializing DDS...")
-        ChannelFactoryInitialize(1)
+        ChannelFactoryInitialize(0)
         
         # Publisher for velocity commands to robot
         self.dds_cmd_pub = ChannelPublisher("rt/run_command/cmd", String_)
