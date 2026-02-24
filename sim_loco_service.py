@@ -95,10 +95,3 @@ class SimLocoService:
         print("[SimLoco] Start Server")
         self.server.Start()
         print("[SimLoco] RPC Server is running. LocoClient can now connect.")
-
-if __name__ == "__main__":
-    service = SimLocoService()
-    service.start_rpc_server()
-    while True:
-        time.sleep(1)
-

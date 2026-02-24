@@ -16,6 +16,7 @@ import signal
 import torch
 import gymnasium as gym
 from pathlib import Path
+from sim_loco_service import SimLocoService
 
 # Isaac Lab AppLauncher
 from isaaclab.app import AppLauncher
@@ -401,6 +402,9 @@ def main():
             print(f"Failed to create dds: {e}")
             return
         print("========= create dds success =========")
+
+    
+
         from tools.data_json_load import get_data_json_list
         print("========= get data json list =========")
         data_idx=0
@@ -410,6 +414,14 @@ def main():
         print("========= get data json list success =========")
     # create action provider
     
+    print("========= create sim loco service =========")
+    try:
+        service = SimLocoService()
+        service.start_rpc_server()
+    except Exception as e:
+        print(f"Failed to create sim loco service: {e}")
+    print("========= create sim loco service success =========")
+
     print(f"\ncreate action provider: {args_cli.action_source}...")
     try:
         print(f"args_cli.task: {args_cli.task}")
