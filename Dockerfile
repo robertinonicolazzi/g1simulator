@@ -115,7 +115,7 @@ ENV PRIVACY_CONSENT=Y
 
 # 安装运行时依赖
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    libglu1-mesa git-lfs zenity unzip \
+    libglu1-mesa git-lfs zenity unzip libxt6 \
     && rm -rf /var/lib/apt/lists/*
 
 # 复制 Conda 环境和代码
