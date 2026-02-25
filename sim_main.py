@@ -567,7 +567,7 @@ def main():
                             # ray_hits_w shape: (num_envs, num_rays, 3)
                             point_cloud = lidar_sensor.data.ray_hits_w[0] # Env 0
                             
-                            # print(f"Lidar sensor data: {point_cloud.shape if point_cloud is not None else 'None'}")
+                            print(f"Lidar sensor data: {point_cloud.shape if point_cloud is not None else 'None'}")
 
                             if point_cloud is not None:
                                  # Filter out hits at origin or max range if needed, 
