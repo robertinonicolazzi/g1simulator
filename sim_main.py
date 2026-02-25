@@ -556,26 +556,47 @@ def main():
 
                 # Check for Lidar data and publish
                 if not args_cli.replay_data:
-                    # Debug: Print available sensors once or periodically
-                    # if loop_count % 100 == 0:
-                    #     print(f"Available sensors: {env.scene.sensors.keys()}")
-                    
-                    if "lidar" in env.scene.sensors:
+                    if loop_count % 100 == 0:
+                        print(f"[LIDAR][DBG] Available sensors: {list(env.scene.sensors.keys())}")
+
+                    if "lidar" not in env.scene.sensors:
+                        if loop_count % 50 == 0:
+                            print("[LIDAR][WARN] Sensor 'lidar' not found in env.scene.sensors")
+                    else:
                         try:
                             lidar_sensor = env.scene.sensors["lidar"]
-                            # Get point cloud (ray hits world frame)
-                            # ray_hits_w shape: (num_envs, num_rays, 3)
-                            point_cloud = lidar_sensor.data.ray_hits_w[0] # Env 0
-                            
-                            print(f"Lidar sensor data: {point_cloud.shape if point_cloud is not None else 'None'}")
+                            point_cloud = lidar_sensor.data.ray_hits_w[0]  # Env 0
 
-                            if point_cloud is not None:
-                                 # Filter out hits at origin or max range if needed, 
-                                 # but LidarDDS can handle raw or let user handle.
-                                 # Publishing raw points.
-                                 lidar_dds.publish(point_cloud.cpu().numpy(), frame_id="livox_frame")
+                            if point_cloud is None:
+                                if loop_count % 10 == 0:
+                                    print("[LIDAR][WARN] point_cloud is None")
+                            else:
+                                pc = point_cloud
+                                if hasattr(pc, "cpu"):
+                                    pc = pc.cpu()
+
+                                pc_np = np.asarray(pc)
+
+                                if pc_np.size == 0:
+                                    if loop_count % 10 == 0:
+                                        print("[LIDAR][WARN] point_cloud is empty (size=0)")
+                                else:
+                                    norms = np.linalg.norm(pc_np, axis=1)
+                                    valid = norms > 1e-6
+                                    n_valid = int(valid.sum())
+                                    n_total = int(pc_np.shape[0])
+
+                                    if loop_count % 10 == 0:
+                                        print(f"[LIDAR][DBG] point_cloud shape={pc_np.shape} valid={n_valid}/{n_total}")
+
+                                    if n_valid == 0:
+                                        if loop_count % 10 == 0:
+                                            print("[LIDAR][WARN] No valid LiDAR hits (all points are ~0); check mesh_prim_paths / prim_path")
+                                    else:
+                                        lidar_dds.publish(pc_np, frame_id="livox_frame")
+
                         except Exception as e:
-                            print(f"Lidar publishing error: {e}")
+                            print(f"[LIDAR][ERR] Lidar publishing error: {e}")
                     # else:
                          # print("Lidar sensor not found in env.scene.sensors")
 
