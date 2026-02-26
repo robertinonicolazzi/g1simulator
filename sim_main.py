@@ -575,16 +575,18 @@ def main():
                                 if hasattr(pc, "cpu"):
                                     pc = pc.cpu()
 
-                                pc_np = np.asarray(pc)
+                                pc_np = pc.numpy() if hasattr(pc, "numpy") else pc
 
-                                if pc_np.size == 0:
+                                if pc_np is None or len(pc_np) == 0:
                                     if loop_count % 10 == 0:
-                                        print("[LIDAR][WARN] point_cloud is empty (size=0)")
+                                        print("[LIDAR][WARN] point_cloud is empty")
                                 else:
-                                    norms = np.linalg.norm(pc_np, axis=1)
-                                    valid = norms > 1e-6
-                                    n_valid = int(valid.sum())
                                     n_total = int(pc_np.shape[0])
+                                    n_valid = 0
+                                    for i in range(n_total):
+                                        x, y, z = float(pc_np[i, 0]), float(pc_np[i, 1]), float(pc_np[i, 2])
+                                        if (x*x + y*y + z*z) > 1e-12:
+                                            n_valid += 1
 
                                     if loop_count % 10 == 0:
                                         print(f"[LIDAR][DBG] point_cloud shape={pc_np.shape} valid={n_valid}/{n_total}")
