@@ -77,7 +77,7 @@ class LidarDDS(DDSObject):
             # Convert to bytes
             # Ensure points are float32
             points_f32 = points.astype(np.float32)
-            data = list(points_f32.tobytes())
+            data = points_f32.tobytes()
 
             msg = PointCloud2_(
                 header,
