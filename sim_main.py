@@ -554,6 +554,12 @@ def main():
                 
                 # execute control step (in main thread, support rendering)
                 controller.step()
+
+                for name in ["room_walls", "terrain", "packing_table1", "packing_table2"]:
+                    obj = env.scene.get(name, None)
+                    prim_path = getattr(obj, "prim_path", None) if obj is not None else None
+                    print(f"[SCENE] {name}: prim_path={prim_path} type={type(obj)}")
+                
                 # Check for Lidar data and publish
                 if not args_cli.replay_data:
                     if loop_count % 100 == 0:
