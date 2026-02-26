@@ -32,10 +32,5 @@ class SensorPresets:
                 horizontal_res=0.2, # Approximate resolution
             ),
             debug_vis=False,
-            mesh_prim_paths=[
-            "/World/envs/env_.*/room_walls",
-            "/World/envs/env_.*/packing_table1",
-            "/World/envs/env_.*/packing_table2",
-            "/World/envs/env_.*/terrain",
-            ]
+            mesh_prim_paths=["/World/envs/env_.*/Room"]
         )
