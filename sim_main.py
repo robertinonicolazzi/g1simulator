@@ -559,48 +559,38 @@ def main():
                     if loop_count % 100 == 0:
                         print(f"[LIDAR][DBG] Available sensors: {list(env.scene.sensors.keys())}")
 
-                    if "lidar" not in env.scene.sensors:
-                        if loop_count % 50 == 0:
-                            print("[LIDAR][WARN] Sensor 'lidar' not found in env.scene.sensors")
-                    else:
-                        try:
-                            lidar_sensor = env.scene.sensors["lidar"]
-                            point_cloud = lidar_sensor.data.ray_hits_w[0]  # Env 0
+                if "lidar" in env.scene.sensors:
+                    try:
+                        lidar_sensor = env.scene.sensors["lidar"]
+                        point_cloud = lidar_sensor.data.ray_hits_w[0]  # Env 0
 
-                            if point_cloud is None:
-                                if loop_count % 10 == 0:
-                                    print("[LIDAR][WARN] point_cloud is None")
+                        if loop_count % 30 == 0:
+                            pc = point_cloud
+                            if pc is None:
+                                print("[LIDAR][FAIL] ray_hits_w is None")
                             else:
-                                pc = point_cloud
-                                if hasattr(pc, "cpu"):
-                                    pc = pc.cpu()
+                                pc_cpu = pc.cpu() if hasattr(pc, "cpu") else pc
+                                pc_np = pc_cpu.numpy() if hasattr(pc_cpu, "numpy") else pc_cpu
 
-                                pc_np = pc.numpy() if hasattr(pc, "numpy") else pc
-
-                                if pc_np is None or len(pc_np) == 0:
-                                    if loop_count % 10 == 0:
-                                        print("[LIDAR][WARN] point_cloud is empty")
+                                n_total = int(pc_np.shape[0]) if hasattr(pc_np, "shape") else 0
+                                if n_total == 0:
+                                    print("[LIDAR][FAIL] point cloud empty")
                                 else:
-                                    n_total = int(pc_np.shape[0])
-                                    n_valid = 0
-                                    for i in range(n_total):
-                                        x, y, z = float(pc_np[i, 0]), float(pc_np[i, 1]), float(pc_np[i, 2])
-                                        if (x*x + y*y + z*z) > 1e-12:
-                                            n_valid += 1
-
-                                    if loop_count % 10 == 0:
-                                        print(f"[LIDAR][DBG] point_cloud shape={pc_np.shape} valid={n_valid}/{n_total}")
-
+                                    eps = 1e-6
+                                    valid = ((pc_np[:, 0]**2 + pc_np[:, 1]**2 + pc_np[:, 2]**2) > (eps * eps))
+                                    n_valid = int(valid.sum())
                                     if n_valid == 0:
-                                        if loop_count % 10 == 0:
-                                            print("[LIDAR][WARN] No valid LiDAR hits (all points are ~0); check mesh_prim_paths / prim_path")
+                                        print(f"[LIDAR][FAIL] no valid hits: valid=0/{n_total}")
                                     else:
-                                        lidar_dds.publish(pc_np, frame_id="livox_frame")
+                                        mins = pc_np[valid].min(axis=0)
+                                        maxs = pc_np[valid].max(axis=0)
+                                        print(f"[LIDAR][OK] hits valid={n_valid}/{n_total} bbox_min={mins} bbox_max={maxs}")
 
-                        except Exception as e:
-                            print(f"[LIDAR][ERR] Lidar publishing error: {e}")
-                    # else:
-                         # print("Lidar sensor not found in env.scene.sensors")
+                        if point_cloud is not None:
+                            lidar_dds.publish(point_cloud.cpu().numpy(), frame_id="livox_frame")
+
+                    except Exception as e:
+                        print(f"[LIDAR][ERR] Lidar publishing error: {e}")
 
                 # print statistics and loop frequency periodically
                 if current_time - last_stats_time >= args_cli.stats_interval:
