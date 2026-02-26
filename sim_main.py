@@ -571,42 +571,50 @@ def main():
                 if not args_cli.replay_data:
                     if loop_count % 100 == 0:
                         print(f"[LIDAR][DBG] Available sensors: {list(env.scene.sensors.keys())}")
-
+                        
                 if "lidar" not in env.scene.sensors:
                     if loop_count % 50 == 0:
                         print("[LIDAR][WARN] Sensor 'lidar' not found in env.scene.sensors")
                 else:
                     try:
                         lidar_sensor = env.scene.sensors["lidar"]
-                        point_cloud = lidar_sensor.data.ray_hits_w[0]  # Env 0
+                        point_cloud = lidar_sensor.data.ray_hits_w[0]
 
-                        if loop_count % 30 == 0:
-                            pc = point_cloud
-                            if pc is None:
+                        if point_cloud is None:
+                            if loop_count % 30 == 0:
                                 print("[LIDAR][FAIL] ray_hits_w is None")
-                            else:
-                                pc_cpu = pc.cpu() if hasattr(pc, "cpu") else pc
-                                pc_np = pc_cpu.numpy() if hasattr(pc_cpu, "numpy") else pc_cpu
+                        else:
+                            pc_cpu = point_cloud.cpu() if hasattr(point_cloud, "cpu") else point_cloud
+                            pc_np = pc_cpu.numpy() if hasattr(pc_cpu, "numpy") else pc_cpu
 
-                                n_total = int(pc_np.shape[0]) if hasattr(pc_np, "shape") else 0
-                                if n_total == 0:
+                            n_total = int(pc_np.shape[0]) if hasattr(pc_np, "shape") else 0
+                            if n_total == 0:
+                                if loop_count % 30 == 0:
                                     print("[LIDAR][FAIL] point cloud empty")
-                                else:
-                                    eps = 1e-6
-                                    finite = np.isfinite(pc_np).all(axis=1)
-                                    valid = finite & ((pc_np[:, 0]**2 + pc_np[:, 1]**2 + pc_np[:, 2]**2) > (eps * eps))
-                                    n_valid = int(valid.sum())
-                                    if n_valid == 0:
+                            else:
+                                eps = 1e-6
+                                finite = np.isfinite(pc_np).all(axis=1)
+                                nonzero = (pc_np[:, 0]**2 + pc_np[:, 1]**2 + pc_np[:, 2]**2) > (eps * eps)
+                                valid = finite & nonzero
+                                n_valid = int(valid.sum())
+
+                                if loop_count % 30 == 0:
+                                    n_inf = int((~finite).sum())
+                                    print(f"[LIDAR][DBG] finite_rows={int(finite.sum())}/{n_total} inf_rows={n_inf}/{n_total} publish_rows={n_valid}/{n_total}")
+
+                                if n_valid == 0:
+                                    if loop_count % 30 == 0:
                                         print(f"[LIDAR][FAIL] no finite hits: valid=0/{n_total}")
-                                    else:
+                                else:
+                                    if loop_count % 30 == 0:
                                         mins = pc_np[valid].min(axis=0)
                                         maxs = pc_np[valid].max(axis=0)
                                         print(f"[LIDAR][OK] hits valid={n_valid}/{n_total} bbox_min={mins} bbox_max={maxs}")
 
-                        if point_cloud is not None and lidar_dds is not None:
-                            lidar_dds.publish(point_cloud.cpu().numpy(), frame_id="livox_frame")
-                        elif loop_count % 50 == 0:
-                            print("[LIDAR][WARN] lidar_dds is None; skipping DDS publish")
+                                    if lidar_dds is not None:
+                                        lidar_dds.publish(pc_np[valid], frame_id="livox_frame")
+                                    elif loop_count % 50 == 0:
+                                        print("[LIDAR][WARN] lidar_dds is None; skipping DDS publish")
 
                     except Exception as e:
                         print(f"[LIDAR][ERR] Lidar publishing error: {e}")
