@@ -17,6 +17,7 @@ import torch
 import gymnasium as gym
 from pathlib import Path
 from sim_loco_service import SimLocoService
+import numpy as np
 
 # Isaac Lab AppLauncher
 from isaaclab.app import AppLauncher
@@ -553,44 +554,50 @@ def main():
                 
                 # execute control step (in main thread, support rendering)
                 controller.step()
-
                 # Check for Lidar data and publish
                 if not args_cli.replay_data:
                     if loop_count % 100 == 0:
                         print(f"[LIDAR][DBG] Available sensors: {list(env.scene.sensors.keys())}")
 
-                if "lidar" in env.scene.sensors:
-                    try:
-                        lidar_sensor = env.scene.sensors["lidar"]
-                        point_cloud = lidar_sensor.data.ray_hits_w[0]  # Env 0
+                    if "lidar" not in env.scene.sensors:
+                        if loop_count % 50 == 0:
+                            print("[LIDAR][WARN] Sensor 'lidar' not found in env.scene.sensors")
+                    else:
+                        try:
+                            lidar_sensor = env.scene.sensors["lidar"]
+                            point_cloud = lidar_sensor.data.ray_hits_w[0]  # Env 0
 
-                        if loop_count % 30 == 0:
-                            pc = point_cloud
-                            if pc is None:
-                                print("[LIDAR][FAIL] ray_hits_w is None")
-                            else:
-                                pc_cpu = pc.cpu() if hasattr(pc, "cpu") else pc
-                                pc_np = pc_cpu.numpy() if hasattr(pc_cpu, "numpy") else pc_cpu
-
-                                n_total = int(pc_np.shape[0]) if hasattr(pc_np, "shape") else 0
-                                if n_total == 0:
-                                    print("[LIDAR][FAIL] point cloud empty")
+                            if loop_count % 30 == 0:
+                                pc = point_cloud
+                                if pc is None:
+                                    print("[LIDAR][FAIL] ray_hits_w is None")
                                 else:
-                                    eps = 1e-6
-                                    valid = ((pc_np[:, 0]**2 + pc_np[:, 1]**2 + pc_np[:, 2]**2) > (eps * eps))
-                                    n_valid = int(valid.sum())
-                                    if n_valid == 0:
-                                        print(f"[LIDAR][FAIL] no valid hits: valid=0/{n_total}")
+                                    pc_cpu = pc.cpu() if hasattr(pc, "cpu") else pc
+                                    pc_np = pc_cpu.numpy() if hasattr(pc_cpu, "numpy") else pc_cpu
+
+                                    n_total = int(pc_np.shape[0]) if hasattr(pc_np, "shape") else 0
+                                    if n_total == 0:
+                                        print("[LIDAR][FAIL] point cloud empty")
                                     else:
-                                        mins = pc_np[valid].min(axis=0)
-                                        maxs = pc_np[valid].max(axis=0)
-                                        print(f"[LIDAR][OK] hits valid={n_valid}/{n_total} bbox_min={mins} bbox_max={maxs}")
+                                        eps = 1e-6
+                                        valid = ((pc_np[:, 0]**2 + pc_np[:, 1]**2 + pc_np[:, 2]**2) > (eps * eps))
+                                        n_valid = int(valid.sum())
+                                        if n_valid == 0:
+                                            print(f"[LIDAR][FAIL] no valid hits: valid=0/{n_total}")
+                                        else:
+                                            mins = pc_np[valid].min(axis=0)
+                                            maxs = pc_np[valid].max(axis=0)
+                                            print(f"[LIDAR][OK] hits valid={n_valid}/{n_total} bbox_min={mins} bbox_max={maxs}")
 
-                        if point_cloud is not None:
-                            lidar_dds.publish(point_cloud.cpu().numpy(), frame_id="livox_frame")
+                            if point_cloud is not None:
+                                if "lidar_dds" in globals() and lidar_dds is not None:
+                                    lidar_dds.publish(point_cloud.cpu().numpy(), frame_id="livox_frame")
+                                else:
+                                    if loop_count % 50 == 0:
+                                        print("[LIDAR][WARN] lidar_dds is not initialized; skipping DDS publish")
 
-                    except Exception as e:
-                        print(f"[LIDAR][ERR] Lidar publishing error: {e}")
+                        except Exception as e:
+                            print(f"[LIDAR][ERR] Lidar publishing error: {e}")
 
                 # print statistics and loop frequency periodically
                 if current_time - last_stats_time >= args_cli.stats_interval:
