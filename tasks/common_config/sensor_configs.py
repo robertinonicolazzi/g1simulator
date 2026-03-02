@@ -32,5 +32,5 @@ class SensorPresets:
                 horizontal_res=0.1, # Approximate resolution
             ),
             debug_vis=False,
-            mesh_prim_paths=["/World"],
+            mesh_prim_paths=["/World/envs/env_0/Room"],
         )
