@@ -29,8 +29,8 @@ class SensorPresets:
                 channels=32,
                 vertical_fov_range=(-7.0, 52.0),
                 horizontal_fov_range=(-180.0, 180.0),
-                horizontal_res=0.2, # Approximate resolution
+                horizontal_res=0.1, # Approximate resolution
             ),
             debug_vis=False,
-            mesh_prim_paths=["/World/envs/env_0/Room/Assets"],
+            mesh_prim_paths=["/World"],
         )
