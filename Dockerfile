@@ -67,7 +67,7 @@ RUN git clone https://github.com/isaac-sim/IsaacLab.git && \
     cd IsaacLab && \
     git checkout v2.2.0 && \
     ./isaaclab.sh --install
-    
+
 # 构建 CycloneDDS
 RUN git clone https://github.com/eclipse-cyclonedds/cyclonedds -b releases/0.10.x /cyclonedds && \
     cd /cyclonedds && mkdir build install && cd build && \
@@ -82,9 +82,11 @@ RUN git clone https://github.com/unitreerobotics/unitree_sdk2_python && \
     cd unitree_sdk2_python && pip install -e .
 
 # Use local repository instead of cloning from GitHub
-RUN git clone --recurse-submodules https://github.com/robertinonicolazzi/g1simulator.git /home/code/unitree_sim_isaaclab && \
-    cd /home/code/unitree_sim_isaaclab && \
-    git submodule update --init --recursive && \
+COPY . /home/code/unitree_sim_isaaclab
+RUN cd /home/code/unitree_sim_isaaclab && \
+    rm -rf teleimager && \
+    git clone https://github.com/unitreerobotics/teleimager teleimager && \
+    cd teleimager && git checkout c77e5962899b96e0f36345c0baf74b1ea2d32347 && cd .. && \
     pip install -r requirements.txt && \
     pip install -e "teleimager[server]" --ignore-requires-python
 # Pre-accept NVIDIA Omniverse EULA (creates acceptance file)
