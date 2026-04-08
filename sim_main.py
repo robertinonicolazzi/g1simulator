@@ -13,6 +13,7 @@ import contextlib
 import time
 import sys
 import signal
+import logging
 import torch
 import gymnasium as gym
 from pathlib import Path
@@ -20,6 +21,11 @@ from sim_loco_service import SimLocoService
 
 # Isaac Lab AppLauncher
 from isaaclab.app import AppLauncher
+
+# Suppress teleimager debug logs (set to WARNING to hide INFO too)
+logging.getLogger("teleimager.image_server").setLevel(
+    getattr(logging, os.environ.get("TELEIMAGER_LOG_LEVEL", "INFO").upper(), logging.INFO)
+)
 
 from teleimager.image_server import run_isaacsim_server
 from dds.dds_create import create_dds_objects,create_dds_objects_replay
@@ -554,30 +560,20 @@ def main():
                 # execute control step (in main thread, support rendering)
                 controller.step()
 
-                # Check for Lidar data and publish
-                if not args_cli.replay_data:
-                    # Debug: Print available sensors once or periodically
-                    # if loop_count % 100 == 0:
-                    #     print(f"Available sensors: {env.scene.sensors.keys()}")
-                    
-                    if "lidar" in env.scene.sensors:
-                        try:
-                            lidar_sensor = env.scene.sensors["lidar"]
-                            # Get point cloud (ray hits world frame)
-                            # ray_hits_w shape: (num_envs, num_rays, 3)
-                            point_cloud = lidar_sensor.data.ray_hits_w[0] # Env 0
-                            
-                            # print(f"Lidar sensor data: {point_cloud.shape if point_cloud is not None else 'None'}")
-
+                # Check for Lidar data and publish (lidar updates at 10Hz, only publish when new data is available)
+                if not args_cli.replay_data and "lidar" in env.scene.sensors:
+                    try:
+                        lidar_sensor = env.scene.sensors["lidar"]
+                        current_lidar_frame = lidar_sensor.data.frame_count if hasattr(lidar_sensor.data, 'frame_count') else loop_count
+                        if current_lidar_frame != getattr(lidar_dds, '_last_frame', -1):
+                            lidar_dds._last_frame = current_lidar_frame
+                            point_cloud = lidar_sensor.data.ray_hits_w[0]  # Env 0
                             if point_cloud is not None:
-                                 # Filter out hits at origin or max range if needed, 
-                                 # but LidarDDS can handle raw or let user handle.
-                                 # Publishing raw points.
-                                 lidar_dds.publish(point_cloud.cpu().numpy(), frame_id="livox_frame")
-                        except Exception as e:
+                                pc_np = point_cloud.cpu().numpy()
+                                lidar_dds.publish(pc_np, frame_id="odom")
+                    except Exception as e:
+                        if loop_count % 500 == 0:
                             print(f"Lidar publishing error: {e}")
-                    # else:
-                         # print("Lidar sensor not found in env.scene.sensors")
 
                 # print statistics and loop frequency periodically
                 if current_time - last_stats_time >= args_cli.stats_interval:

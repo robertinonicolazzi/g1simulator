@@ -1,0 +1,33 @@
+# ─── pointcloud_to_laserscan — Unitree G1 / Livox Mid360 ──────────────────────
+#
+# target_frame: base_link
+#   Projects points into the base_link frame (pelvis, ~0.45m above ground).
+#   LiDAR (livox_frame) is +0.46m above base_link (~0.91m above ground).
+#
+# Height band: chosen to capture wall features while excluding the ground
+# plane (~-0.45m in base_link frame) and keeping a narrow band for consistent
+# scans during humanoid gait sway.
+
+pc_to_ls:
+  ros__parameters:
+    target_frame: livox_frame
+    transform_tolerance: 0.5
+
+    # Lidar is +0.46m above base_link.
+    # Ground in livox_frame is at ~-0.91m.
+    # -0.56 = ~0.35m above ground — clears floor even with gait bob.
+    #  0.04 = ~0.95m above ground — captures wall features at waist/chest height.
+    min_height: -0.56
+    max_height:  0.04
+
+    angle_min:        -3.1415
+    angle_max:         3.1415
+    angle_increment:   0.0087   # ~0.5 deg
+    scan_time:         0.1      # 10 Hz
+    range_min:         0.3
+    # Matched to slam_toolbox max_laser_range (20m); points beyond are
+    # discarded by SLAM anyway.
+    range_max:        20.0
+
+    use_inf:     true
+    inf_epsilon: 1.0

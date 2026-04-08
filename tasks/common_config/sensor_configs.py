@@ -21,7 +21,7 @@ class SensorPresets:
         - 10Hz update rate
         """
         return RayCasterCfg(
-            prim_path="/World/envs/env_.*/Robot/mid360_link",
+            prim_path="/World/envs/env_.*/Robot/d435_link",
             update_period=0.1, # 10Hz
             offset=RayCasterCfg.OffsetCfg(pos=(0.0, 0.0, 0.1)), # Offset from head link
             attach_yaw_only=False,
@@ -32,5 +32,5 @@ class SensorPresets:
                 horizontal_res=0.2, # Approximate resolution
             ),
             debug_vis=False,
-            mesh_prim_paths=["/World/envs/env_0/PackingTable_2/PackingTable_2/container_h20/container_h20_inst/Container_H20_01"], # Detect room walls
+            mesh_prim_paths=["/World/envs/env_0"],
         )

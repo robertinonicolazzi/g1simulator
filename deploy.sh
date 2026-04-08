@@ -1,4 +1,4 @@
 #!/bin/bash
 
 echo "Copying files to the simulator VM..."
-rsync -avz -e "ssh -i ./robotic_crew_rsa_gcp -o StrictHostKeyChecking=no" --exclude 'deploy.sh' --exclude '.git' ./ rc@35.232.79.9:~/inorbit_g1_sim/
+rsync -avz -e "ssh -i ./robotic_crew_rsa_gcp -o StrictHostKeyChecking=no" --exclude 'g1_sim_controller/__pycache__' --exclude 'g1_sim_controller/build' --exclude 'g1_sim_controller/install' --exclude 'g1_sim_controller/log' --exclude 'g1_sim_controller/src/g1_sim_controller/g1_sim_controller/lib' --exclude 'g1_sim_controller/src/g1_sim_controller/build' --exclude 'g1_sim_controller/src/g1_sim_controller/install' --exclude 'g1_sim_controller/src/g1_sim_controller/log' --exclude 'g1_sim_controller/src/g1_sim_controller/src/g1_sim_controller/lib' --exclude 'teleimager' --exclude 'deploy.sh' --exclude '.git' ./ rc@35.232.79.9:~/inorbit_g1_sim/
