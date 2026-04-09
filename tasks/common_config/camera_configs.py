@@ -87,6 +87,26 @@ class CameraPresets:
     def g1_front_camera(cls) -> CameraCfg:
         """front camera configuration"""
         return CameraBaseCfg.get_camera_config()
+
+    @classmethod
+    def g1_front_camera_low_res(cls) -> CameraCfg:
+        """front camera low-resolution configuration (320x240, 10Hz)"""
+        return CameraBaseCfg.get_camera_config(height=240, width=320, update_period=0.1)
+
+    @classmethod
+    def g1_world_camera_low_res(cls) -> CameraCfg:
+        """world camera low-resolution configuration (320x240, 10Hz)"""
+        return CameraBaseCfg.get_camera_config(
+            prim_path="/World/envs/env_.*/Robot/d435_link/PerspectiveCamera_robot",
+            pos_offset=(-0.9, 0.0, 0.0),
+            rot_offset=(-0.51292, 0.51292, -0.48674, 0.48674),
+            focal_length=12,
+            horizontal_aperture=27,
+            height=240,
+            width=320,
+            update_period=0.1,
+        )
+
     @classmethod
     def h12_front_camera(cls) -> CameraCfg:
         """front camera configuration"""

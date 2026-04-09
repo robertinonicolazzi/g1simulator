@@ -10,15 +10,17 @@
 
 pc_to_ls:
   ros__parameters:
+    # In the new setup, the points are published in the world frame but the 
+    # output LaserScan MUST be generated relative to the robot's moving frame
+    # (livox_frame) so SLAM knows it's attached to the robot, not floating at odom.
     target_frame: livox_frame
     transform_tolerance: 0.5
 
-    # Lidar is +0.46m above base_link.
-    # Ground in livox_frame is at ~-0.91m.
-    # -0.56 = ~0.35m above ground — clears floor even with gait bob.
-    #  0.04 = ~0.95m above ground — captures wall features at waist/chest height.
-    min_height: -0.56
-    max_height:  0.04
+    # Since we changed it to a pure 1-channel 2D planar scan, we don't need strict 
+    # height filters to remove the ground/ceiling. We open these up wide so that 
+    # regardless of where the sensor is mounted on the robot chassis, the 2D scan gets through.
+    min_height: -5.0
+    max_height: 5.0
 
     angle_min:        -3.1415
     angle_max:         3.1415

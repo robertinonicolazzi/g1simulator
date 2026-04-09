@@ -1,0 +1,14 @@
+boto3==1.26.37
+catkin-pkg==0.5.2
+Flask==2.2.2
+mock==4.0.3
+paho-mqtt==1.6.1
+# NOTE(FlorGrosso): protobuf is pinned to 3.5.x for all variants, until we switch to a higher version.
+protobuf==3.5.1
+psutil==5.9.4
+pypng==0.0.20
+# Required to send traffic through HTTP proxy servers
+PySocks==1.7.1
+
+# TODO(FlorGrosso): Move these packages to a ROS 2 requirements list
+transformations==2022.9.26

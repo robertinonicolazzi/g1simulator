@@ -487,19 +487,20 @@ def main():
                 current_time = time.time()
                 loop_count += 1
                 if not args_cli.replay_data:
-                    try:
-                        env_state = env.scene.get_state()
-                        env_state_json =  sim_state_to_json(env_state)
-                        sim_state = {"init_state":env_state_json,"task_name":args_cli.task}
-                    except Exception as e:
-                        print(f"Failed to get env state: {e}")
-                        raise e
-                    try:
-                    # sim_state = json.dumps(sim_state)
-                        sim_state_dds.write_sim_state_data(sim_state)
-                    except Exception as e:
-                        print(f"Failed to write sim state: {e}")
-                        raise e
+                    if (loop_count % 5) == 0:  # throttle to ~20Hz (was every loop)
+                        try:
+                            env_state = env.scene.get_state()
+                            env_state_json =  sim_state_to_json(env_state)
+                            sim_state = {"init_state":env_state_json,"task_name":args_cli.task}
+                        except Exception as e:
+                            print(f"Failed to get env state: {e}")
+                            raise e
+                        try:
+                        # sim_state = json.dumps(sim_state)
+                            sim_state_dds.write_sim_state_data(sim_state)
+                        except Exception as e:
+                            print(f"Failed to write sim state: {e}")
+                            raise e
                     try:
                         reset_pose_cmd = reset_pose_dds.get_reset_pose_command()
                     except Exception as e:
@@ -569,8 +570,7 @@ def main():
                             lidar_dds._last_frame = current_lidar_frame
                             point_cloud = lidar_sensor.data.ray_hits_w[0]  # Env 0
                             if point_cloud is not None:
-                                pc_np = point_cloud.cpu().numpy()
-                                lidar_dds.publish(pc_np, frame_id="odom")
+                                lidar_dds.publish(point_cloud.cpu().numpy(), frame_id="odom")
                     except Exception as e:
                         if loop_count % 500 == 0:
                             print(f"Lidar publishing error: {e}")

@@ -11,4 +11,5 @@ docker run --gpus all -it --rm --network host --ipc host \
   -v /home/rc/inorbit_g1_sim/sim_main.py:/home/code/unitree_sim_isaaclab/sim_main.py \
   -v /home/rc/inorbit_g1_sim/dds:/home/code/unitree_sim_isaaclab/dds \
   -v /home/rc/inorbit_g1_sim/tasks:/home/code/unitree_sim_isaaclab/tasks \
+  -v /home/rc/inorbit_g1_sim/run_simulation.sh:/home/code/unitree_sim_isaaclab/run_simulation.sh \
   inorbit_g1_sim:latest /bin/bash

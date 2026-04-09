@@ -88,7 +88,6 @@ class BasicTelemetry(Node):
         if now - self.last_fsm_change_time >= self.fsm_cycle_rate:
             # Randomly switch to a new state for simulation
             self.fsm_id = random.choice(list(self.FSM_ID_MAP.keys()))
-            self.get_logger().info(f"Simulated FSM Change to: {self.FSM_ID_MAP[self.fsm_id]} ({self.fsm_id})")
             self.last_fsm_change_time = now
 
         # --- Publish Core Status ---

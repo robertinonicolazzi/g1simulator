@@ -16,7 +16,6 @@ from isaaclab.managers import TerminationTermCfg as DoneTerm
 from isaaclab.managers import RewardTermCfg as RewTerm
 from isaaclab.utils import configclass
 from isaaclab.assets import ArticulationCfg
-from isaaclab.sensors import ContactSensorCfg
 from . import mdp
 # use Isaac Lab native event system
 
@@ -43,12 +42,9 @@ class ObjectTableSceneCfg(TableCylinderSceneCfgWH):
     robot: ArticulationCfg = G1RobotPresets.g1_29dof_dex1_wholebody(init_pos=(-3.9, -2.81811, 0.8),
         init_rot=(1, 0, 0, 0))
 
-    contact_forces = ContactSensorCfg(prim_path="/World/envs/env_.*/Robot/.*", history_length=10, track_air_time=True, debug_vis=False)
-    # 6. add camera configuration 
-    front_camera = CameraPresets.g1_front_camera()
-    left_wrist_camera = CameraPresets.left_gripper_wrist_camera()
-    right_wrist_camera = CameraPresets.right_gripper_wrist_camera()
-    robot_camera = CameraPresets.g1_world_camera()
+    # 6. add camera configuration
+    front_camera = CameraPresets.g1_front_camera_low_res()
+    robot_camera = CameraPresets.g1_world_camera_low_res()
     # 7. add lidar configuration
     lidar = SensorPresets.livox_mid360()
 ##
@@ -148,8 +144,8 @@ class MoveCylinderG129Dex1WholebodyEnvCfg(ManagerBasedRLEnvCfg):
         self.episode_length_s = 20.0
         # simulation settings
         self.sim.dt = 0.005
-        self.scene.contact_forces.update_period = self.sim.dt
-        self.sim.render_interval = self.decimation
+        self.sim.physx.num_substeps = 1
+        self.sim.render_interval = 8  # render every 8 physics steps (was 4)
         self.sim.physx.bounce_threshold_velocity = 0.01
         self.sim.physx.gpu_found_lost_aggregate_pairs_capacity = 1024 * 1024 * 4
         self.sim.physx.gpu_total_aggregate_pairs_capacity = 16 * 1024

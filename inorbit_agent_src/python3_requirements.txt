@@ -1,0 +1,16 @@
+# Foxy, Humble and Iron agents specific (Python < 3.12)
+setuptools==65.6.3; python_version < '3.12'
+pyyaml==6.0; python_version < '3.12'
+numpy==1.24.0; python_version < '3.12'
+opencv-python==4.6.0.66; python_version < '3.12'
+Pillow==9.3.0; python_version < '3.12'
+
+# Python >= 3.12
+setuptools==75.6.0; python_version >= '3.12'
+pyyaml==6.0.2; python_version >= '3.12'
+numpy==2.0; python_version >= '3.12'
+opencv-python==4.10.0.84; python_version >= '3.12'
+
+# Offline support
+pycryptodomex==3.16
+python-gnupg==0.5.2

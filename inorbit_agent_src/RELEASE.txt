@@ -1,0 +1,631 @@
+4.22.0.ros2 :
+- Adds support for ROS 2 Jazzy.
+
+4.21.0.ros2:
+- Publish key-value pairs on ROS Diagnostics messages.
+
+4.20.0.ros2:
+- Adds support for configurable namespaces for frame IDs.
+- Adds support for compressed images.
+- Adds support for ROS2 diagnostics.
+
+4.19.1.ros2 :
+- Adds support for ROS 2 Iron.
+
+4.19.0.ros2:
+- Adds new environment variable (INORBIT_ROBOT_NAME) that allows setting the robot name
+
+4.18.3.ros2:
+- Handles InvalidHandle exceptions on main ROSAgentlet thread while spinning and makes the agent to restart.
+
+4.18.2.ros2:
+- Fixes Waypoint Teleop command by setting the yaw angle specified by the user.
+
+4.18.1.ros2:
+- Removes unnecessary GPL libraries from agents.
+
+4.18.0.ros2:
+- GPS Agentlet: Adds support for GPSFix message type
+- Added offset on pose messages to avoid losing precision on larger x and y coordinates
+
+4.17.4.ros2:
+- CustomDataAgentlet: make max bytes for key/values messages (MAX_BYTES_PER_KEY_VAL_MSG) support module_states.
+
+4.17.3.ros2:
+- Fixes GPS Agentlet when navsatfix topic is already set
+
+4.17.2.ros2:
+- Adds GPS Agentlet set_state missing method
+
+4.17.1.ros2:
+- Fixes with module state manager
+
+4.17.0.ros2:
+- Add new GPS Agentlet to support outdoor navigation
+- Explicit import of Foxy and Humble library path. Fixes rclpy loading on Debian installation
+
+4.16.0.ros2:
+- Add support for Databag and Rosbag recording on ROS2.
+- Fix RosAgentlet load when tf2 module import cannot be executed
+
+4.15.1.ros2:
++ merged from 4.15.1:
+  - Fix compact DeltaInt encoding option for publishing paths.
++ merged from 4.15.0:
+  - Add compact DeltaInt encoding option for publishing paths.
++ merged from 4.14.0:
+  - Make topic info module compatible for Python 2 and 3.
++ merged from 4.13.0:
+  - Include frameId when publishing paths.
++ merged from 4.12.0:
+  - Fix synchronization issues when receiving and publishing path data.
++ merged from 4.11.0:
+  - Re-sync databags on mqtt reconnection if changes occurred since last full sync; allow disabling minimum full sync threshold via config.
++ merged from 4.10.0:
+  - Monitor and update changes on databags properties.
++ merged from 4.9.0:
+  - More robust agent initialization to avoid MQTT client deadlocks under certain conditions.
++ merged from 4.8.0:
+  - Avoid writing stdout and stderr output to agent log, to prevent accidental disk flooding.
+  - Be more defensive with module state manager to avoid blocking initialization.
+  - Events agentlet throttles based on 10 second bucket measurements and is configurable now.
++ merged from 4.7.0:
+  - Hotfixes to databags protocol; adds parameters to tune agentlet rates and limits.
+  - [DISABLED] Adds HTTP traffic from rosbags uploads to reported InOrbit network traffic.
++ merged from 4.6.1:
+  - Changes to S3 artifacts upload paths.
++ merged from 4.6.0:
+  - Make ROS topic monitoring accept topic names with and without an initial '/'.
++ merged from 4.5.1:
+  - Import Flask dependencies in load stage of APIAgentlet to restrict impact of future
+    dependency breakages.
++ merged from 4.5.0:
+  - CustomDataAgentlet: enable forcing a key for a given custom_field through module_states.
+  - CustomDataAgentlet: read text files in tail mode by default.
++ merged from 4.4.0:
+  - CustomDataAgentlet: fix crash when values contain non-ascii code. Try to decode it
+  as utf-8 first and if the error persists avoid publishing the key/value.
++ merged from 4.3.0:
+  - RosMapAgentlet: prevent uploading a map if a different map_topic is configured just before the map image is uploaded.
+  This behavior can be configured through the map_prevent_outdated_upload module state.
++ merged from 4.2.0:
+  - Allows choosing websockets as the MQTT transport via server configuration.
++ merged from 4.1.0:
+  - Fix CustomData agentlet error that caused outages when a value's size exceeded MAX_BYTES_PER_KEY_VAL_MSG.
++ merged from 4.0.0:
+  - Add pre-commit hooks to the agent and do a first linter pass on agent-main code.
+  - Add more resilience to the state manager agentlet.
+  - Add max_files parameter to the databags agentlet.
+
+3.28.0.ros2:
+- Add support for ROS 2 Humble.
+
+3.27.0.ros2:
++ merged from master 3.27.0 :
+ - Prevent log manager from publishing multiple updates through MQTT for the same log request.
++ merged from master 3.26.0:
+  - Clean the environment by default before running an action script. This behavior is configurable
+    through module states and can be set back to false if needed (as previous agent versions worked).
+    If the environment is not cleaned, the action command  will be run with the environment the agent
+    uses, which includes the agent specific python virtualenv and other settings which can interfere
+    with the user's expected environment to run scripts.
+  - CustomCommandsAgentlet: set script execution status as 'ABORTED' if return code is not zero.
++ merged from master 3.25.0:
+  - Support for credentials late-binding
++ merged from master 3.24.0:
+  - Support for offline mode and connection state handling
++ merged from master 3.23.0:
+  - RosImageAgentlet: Added module states to adjust brightness and contrast per camera.
+  - Allow specifying pre-installed credentials via .credentials or the file specified
+    in the INORBIT_CONNECTION_CONFIG_FILE environment variable
+  - Make RosMapAgentlet loaded by default on start, always
++ merged from master 3.22.0:
+  - Added update flag for map messages that act as a map_id/frame_id correction
++ merged from master 3.21.0:
+  - Implements a workaround to a publisher unregister rospy bug by avoiding publisher unregister
+    on agentlet unloads. Can be overriden with an INORBIT_ROS_UNREGISTER_PUBLISHERS environment
+    variable.
++ merged from master 3.20.0:
+  - Allow configuring action scripts' path through the env var INORBIT_ACTIONS_PATH
++ merged from master 3.19.0:
+  - Wait before sending the map message corrections when map_id or frame_id are coming from a topic
++ merged from master 3.18.0:
+  - Added module states to mapAgentlet for multimap support
+  - Added map_id concept and configuration logic
++ merged from master 3.17.1:
+  - Fix MapAgentlet to set module states when not loaded yet
++ merged from master 3.17.0:
+  - Created new MapAgentlet and moved map manipulation from localizationAgentlet to it
++ merged from master 3.15.1:
+  - Fixed credentials reading in artifacts util
++ merged from master 3.15.0:
+  - Addressed technical debt in logManager. Started using the Artifacts utils
++ merged from master 3.12.1:
+  - Fix to skip proxy config if an empty HTTP_PROXY environment variable is present
+  - Fix log file upload when INORBIT_HOME is missing
+
+3.12.0.ros2:
+- Fix log file util to fetch AWS credentials when the agent is installed on a custom path
+
+3.9.0.ros2:
+- Link: Fix on_message callback silent failures
+
+3.3.0.ros2:
++ merged from master 3.8.0:
+  - Update agent watchdog to fetch MQTT broker's IP address and port
+  - Enable configuring agent's log level
++ merged from master 3.7.0:
+  - Send maps in a separate thread to avoid blocking MQTT traffic
+  - Add agent watchdog script.
++ merged from master 3.5.0:
+  - Added support for agent custom install directory
+  - Image module: resize camera images only when necessary
+  - Choose explicit python interpreter for virtualenv creation
++ merged from master 3.4.0:
+  - Use tls_version PROTOCOL_TLSv1_2
+
+3.2.0.ros2:
++ merged from master 3.6.0:
+  - Fix AWS credentials try-except message logging.
+
+3.1.1.ros2:
+- Fix logs manager module to be Python 3 compatible.
+
+3.1.0.ros2:
+- Fix costmap processing when occupancy grid's values are illegal (above 100).
+- Enable logs manager module.
+- RosLocalizationAgentlet: add default values for maps' and paths' rate limiting.
+- RosLocalizationAgentlet: enable sending localization data even if the map wasn't published.
++ merged from master 3.2.1: 
+  - Adds optional throttling to map messages (and fixes throttling for paths)
+
+3.0.0.ros2:
+- install.sh: use python3-virtualenv instead of python3-venv
++ merged from master 3.0.0: 
+  - Added proxy support (Merged 'proxy' agent variant)
+
+2.20.0.ros2:
+- First ROS2 agent
+
+2.19.0:
+- RosLocalizationAgentlet: add 'cancel nav goal' simple action
+
+2.18.0:
+- adds PoseAgentlet for reporting poses independently from Localization agentlet
+
+2.17.0:
+- adds new RobotEventsAgentlet and support for events sampling mode for CustomDataAgentlet
+
+2.16.0:
+- start.sh: fetch install script for updates based on robotId
+
+2.15.0:
+- start.sh: write actual version and variant to log
+- Image module: handle steps on camera data of type sensor_msgs/Image
+
+2.14.0:
+- CustomDataAgentlet: support 'regular' and 'diff' sampling modes
+
+2.13.0:
+- Force RosLocalizationAgentlet to update the cosmap after changing its runlevel
+
+2.12.0:
+- Pins docutils to 0.15.2 to avoid conflict with botocore
+
+2.11.0:
+- RosImageAgentlet: add support for CompressedImage messages
+
+2.10.0:
+- Fix a breakage with agent installation when running with virtualenv already installed with a predefined custom python interpreter.
+- Support reading key-value pairs from a configurable topics
+- CustomDataAgentlet: use 'custom_field' as the variable name when referring to data sources ids
+
+2.9.0:
+- Fix clear proper laser config name
+- Add smart downsampling method for robot paths.
+
+2.8.0:
+- CustomCommandsAgentlet: send a status update when a script's execution has timed out.
+- Don't send 'no message' if a diagnostics msg is empty, send an empty string instead.
+
+2.7.0:
+- RosLocalizationAgentlet: include 'frame_id' on initial pose message
+
+2.6.0:
+- Fix for data hash calculation on large maps that were sending an invalid hash when map
+  data was included
+
+2.5.0:
+- Fix catch exceptions raised when no AWS credentials are configured
+- Add support for '8UC1' image enconding
+- Fix custom ROS path setting breaking on remote agent update
+
+2.4.0:
+- Discarded version, do not reuse this version number
+
+2.3.1:
+- Don't select the first available PoseArray subscriber for navigation path messages
+
+2.3.0:
+- New interface to send waypoints relative to robot or map
+
+2.2.0:
+- Detect failing mqtt connections and force an agent self-restart in
+those cases.
+
+2.1.0:
+- Fix for cameras default topic setup.
+
+2.0.1:
+- Fix for python 2.7 setuptools version.
+
+2.0.0:
+- Fix ROS subscriptions for paths and camera images.
+
+1.20.1:
+- Don't send path message if there is no path data available
+
+1.20.0:
+- Support multiple robot paths
+
+1.19.0:
+- RosMonitoringAgentlet loading behavior moved to server config based
+- Don't send available nodes, topics and params since they are unused
+- New protocol for server-initiated request of module options, implemented for
+  RosMonitoringAgentlet
+- Add level flag for diagnostics protobuf messages
+
+1.18.0:
+- Make safety restart times higher than 24 hours and slightly randomize to avoid
+  concurrent agent restarts for robots started at the same time.
+
+1.17.0:
+- Publish zero velocity when user stops sending teleop commands
+- Fix diagnostics status ts to match publishing time
+
+1.16.1:
+- Fixed regression: diagnostics messages not being cleaned up after publishing
+
+1.16.0:
+- Subscribe MQTT topics using different QoS settings
+- Compute and publish ROS Diagnostics status from RosDiagnosticsAgentlet
+- Set QoS = 1 for alert messages
+- Add command to force resending alerts
+
+1.15.1:
+- Make map data truncation time configurable with a default of 60 seconds and the
+  possibility to be disabled by setting it to 0
+
+1.15.0:
+- Don't send large maps automatically, instead wait for the server to request it
+- Provide topic name and map data hash with the map message
+- Truncate map data for large maps to reduce allocated memory
+- ROS diagnostics messages migrated to protobuf
+- Fix broken installation for non-ROS installations, missing cv2 python module
+
+1.14.0:
+- Remove logging for new/cleared alerts
+
+1.13.0:
+- Use anonymous mode on ROS init to be more resilient to bad terminations
+- Fixes linking of correct cv2 package when installing agent on any CPU architecture
+- Updates python boto3 package version
+
+1.12.0:
+- Fixed regression: broken custom data agentlet when OpenCV is not available
+- Fixed PIL image conversions: not using bgr format
+
+1.11.0:
+- Allows installation over a custom ROS distribution by providing ROS_CUSTOM_PATH env var.
+
+1.10.0:
+- Fixes CustomDataAgentlet to limit bytes_per_msg to MAX_BYTES_PER_BLOB in case of overflow.
+
+1.9.0:
+- Robustness updates to curl-based installer to allow systemd to restart in case of initial failure
+
+1.8.0:
+- Script installer automatically picks up custom ROS_MASTER_URI value if it exists when installing
+
+1.7.0:
+- Adds explicit dependency to gettext-base to Debian installer
+- Fixes RosImageAgentlet to auto-configure properly if no settings provided
+- Supports running concurrent script actions
+- Updates maximum blob size for custom data text files to 20kB
+
+1.6.0:
+- Adds debconf parameter to disable using systemd during installation
+- Adds debconf parameters to customize the userid to run agent as
+- Enabled configuring read order and blob size for text files in
+  CustomDataAgentlet.
+
+1.5.1:
+- Fix 1.5.0 regression: image module to encode camera images.
+
+1.5.0:
+- Enabled individual config for custom data of type image.
+
+1.4.0:
+- Fix alerts manager to clear alerts from previous sessions correctly after an
+  agent restart.
+
+1.3.0:
+- Reverted selected mqtt version package install. Everyone gets 1.2.3 again
+- Fixes restart timer for the case where multiple disconnects are received
+- Make action scripts execution timeout configurable through a state
+
+1.2.15:
+- Updated python mqtt package installation to also install on 18.04
+
+1.2.14:
+- Updated python mqtt package installation depending on python version.
+- Updated number of MQTT config retries from 10 to 25 and made it configurable
+  through a INORBIT_CONFIG_RETRIES environment variable.
+- Created a timer that restarts the agent if it wasn't able to connect
+  to MQTT after a configurable number of seconds - defaults to 5 minutes.
+
+1.2.13:
+- Fix publishing rate calculation for RosImageAgentlet.
+
+1.2.12:
+- Updated binary architecture to 'all'.
+
+1.2.11:
+- Enabled camera's individual config.
+- Added img resizing through states.
+
+1.2.10:
+- Allow binary installation in system location
+- Add support for '32FC1' and '16UC1' image encondings.
+
+1.2.9:
+- Enabled multiple camera sources.
+
+1.2.8:
+- Added python-dev dependency check on installer.
+
+1.2.7:
+- Filter rosout messages by verbosity level.
+- Updated SpatialAnnotationsAgentlet to receive module states.
+
+1.2.6:
+- Fixed pose update on map when reloading LocalizationAgentlet.
+- Added SpatialAnnotationsAgentlet.
+
+1.2.5:
+- Updated installer script to provide a safe update.
+
+1.2.4:
+- Added Agent API.
+- Fixed setting topics to record on RosbagAgentlet.
+- Added PIL to enable Image Custom Data Source for systems with no ROS.
+
+1.2.3.1:
+- Fixed CustomDataAgentlet when handling paths.
+
+1.2.3:
+- Prevented agent from spamming when working without ROS.
+- Enabled CustomCommandsAgentlet and CustomDataAgentlet to load without ROS.
+- Updated script installation task in CustomCommandsAgentlet.
+- Allowed configuring diagnostics topic and added support to read raw diagnostics.
+- Send list of available keys per name on ROS Diagnostics message.
+
+1.2.2:
+- Updated installer for systems with no ROS
+- ROS custom commands topic migrated to protobuf
+- Add script execution action to custom commands
+
+1.2.1:
+- Fix uninstall script
+- Throttling for rosout messages
+- Created link to cv2 in virtual environment for ROS Melodic
+- Log tf frame ids on start up
+- Added RAM usage percentage to system stats
+- Fix monitor for topics which haven't been published at config time
+- Fix monitor updates for topics dropping their rate to 0
+
+1.2.0.1:
+- Make robot frame ID in localization configurable by state robot_frame
+- Move several repeated logging calls to once_logger
+
+1.2:
+- Cap costmap updates to once per second to alleviate server performance
+- Camera agentlet fix for Ubuntu 14.04
+- Fix double laser support
+- Add welcome message to agent installer
+
+1.1.24.1:
+- Experimental support for Ubuntu 18.04
+- Fix image agentlet publish on default config
+
+1.1.24:
+- Support processing different image formats
+- Reviewed QoS for agent messages
+
+1.1.23.2:
+- Fix 1.1.23 regression: send agent alerts
+- Fix reporting of HDD usage to be in MB
+
+1.1.23.1:
+- Avoid blocking forever during agent initialization
+
+1.1.23:
+- Added ROS monitor agentlet
+- Updated optional network interfaces configuration
+- Updated installer error messages
+- Updated agent log messages
+- Enabled loading custom data agentlet without OpenCV
+
+1.1.22:
+- Added support to measure and publish per interface network stats
+- Fixed measuring of disk usage per volume
+- Added custom commands agentlet
+
+1.1.21:
+- Fixed ROS thread crash when occupancy grid is not set
+- Removed battery information from system messages
+- Added support to upload agent logs when requested
+- Added support to measure and publish per volume disk usage
+
+1.1.20:
+- Fixed rosbag agentlet to perform a clean unload
+- Added support for ROS diagnostics custom data type
+- Made HDD robot vitals data source configurable
+- Added support for dual camera streaming
+
+1.1.19:
+- Out-of-range odometry data is filtered out
+- Added support for image custom data type
+- Dynamic configuration of custom data sources
+
+1.1.18:
+- Support receiving agent states in JSON format
+- Enabled reading battery information from ROS diagnostics
+- Support multiple custom data elements simultaneously
+
+1.1.17:
+- Pick-up and use ROS_IP from environment during initial install
+
+1.1.16:
+- Enable sending a navigation goal when requested
+
+1.1.15:
+- Added support for text file custom data type
+
+1.1.14:
+- Added custom data agentlet
+
+1.1.13:
+- Map and costmap now encoded in Y+ up format
+
+1.1.12:
+- Laser and pose migrated to protobuf
+- Laser points data downsampled
+- Enable sending the list of logfiles in robot when requested
+- Allow waking up any agentlet to switch runlevels faster
+
+1.1.11:
+- Camera images are sent in protobuf format
+- Set camera topic as camera_id for protobuf messages
+- Proper log rotation (1Mb each)
+
+1.1.10:
+- Prevent rosbag subprocess from logging stdout
+- Fix set_pose configuration to set initialpose as default
+- Add checks for ROS master status before updating publishers/subscribers
+- Allow user to restart the agent
+- Maps are sent in protobuf format
+
+1.1.9.1:
+- Prevent rosbag agentlet exception from killing agent
+- Fix default path topic selection
+
+1.1.9:
+- Obtain AWS keys from server and use for rosbag upload
+- Prevent teleoperating when odometry data is outdated
+- Added ros navigation paths
+- Teleop loaded by the server instead of the agent
+- Added ros costmaps
+
+1.1.8:
+- Made set_pose topic configurable
+- Stability fixes for ROS disconnection and MQTT initial connection
+- Enabled camera agentlet to run at a higher runlevel
+
+1.1.7:
+- Hotfix for inorbit HDD usage calculation
+- Added else scenario to publishing loops in various agentlets
+- Compute and publish linear and angular velocities
+- Added checks for rosbag manual deletion
+
+1.1.6:
+- Support upside-down laser
+- Add hdd usage checks while recording rosbags
+- Add timestamps to rosbags
+- Changed logging initialization, moved to its own module
+- Use TLS on Ubuntu 14.04
+- Support secondary laser in localization module
+- Fix for rosbag uploads
+- Publish updates of space used by recorded rosbags
+
+1.1.5:
+- Fixed publishing of rosbag states
+- Truncate logs on agent start-up
+- Fixed camera agentlet import and reduced log spam
+- Enable external setting of laser topic
+
+1.1.4:
+- Enable external setting of rosbags to record
+- Unified state topic to single one
+- Hack in start.sh to force find ROS .so find path
+- Don't log more than one TF exception for each parent / child combination
+
+1.1.3:
+- Added camera topic persistence
+- Generalized states publishing
+
+1.1.2.3:
+- Hotfix for CPU usage issue
+
+1.1.2.2:
+- Added another condition to disable tls on ubuntu trusty.
+
+1.1.2.1:
+- Added conditional tls for local testing.
+
+1.1.2:
+- Added S3 uploader util
+- Added Alert manager
+- Added Rosbag Agentlet
+- Enabled tls for mqtt
+
+1.1.1:
+- Updated diagnostics agentlet to use runlevel 0 by default
+- Protobuf serialization for the echo message.
+- More detailed logging of state message publishing
+- Include agent version and host name in mqtt_config call
+
+1.1.0.1:
+- Use QOS=1 for main agent status message
+
+1.1.0:
+- Updated installer messages
+- Added checks for failed downloads on installer
+
+1.0.10.1:
+- Module state fixes for when the agent is restarted
+- Fixed teleop agentlet to perform odometry checks
+
+1.0.10:
+- Added teleop agentlet
+- Added odometry module
+- Changed MQTT config request to server to use POST
+
+1.0.9:
+- Replaced cpu, hdd and network topics by single 'stats' message
+- New protobuf serialization (used in system/stats)
+- Echo service update to return agent timestamp in milliseconds
+- Exclude localhost from network stats
+- Publish storage used by inorbit in MB and percentage
+- set_pose uses seq number to allow callbacks
+
+1.0.8:
+- Updated camera agentlet to find ROS topic to subscribe to
+- Migrated topic finder to ROS agentlet
+- Allow localization module to publish from different map topics
+- Publish available map ROS topics
+
+1.0.7:
+- Fixed discrepancy between laser and robot in localization module
+- Fixed camera agentlet to publish resized images
+- Updated camera agentlet to publish grayscale images with maximum compression
+
+1.0.6:
+- Publish low-resolution, low-bandwidth RGB camera images
+- Created link to cv2 in virtual environment for ROS Indigo
+
+1.0.5:
+- Publish HDD usage (from all the aggregated storage in the robot)
+
+1.0.4:
+- Initial version

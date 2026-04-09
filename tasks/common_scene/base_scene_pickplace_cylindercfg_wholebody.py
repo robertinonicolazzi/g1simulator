@@ -7,9 +7,7 @@ provides reusable scene element configurations, such as tables, objects, ground,
 import isaaclab.sim as sim_utils
 from isaaclab.assets import  AssetBaseCfg, RigidObjectCfg
 from isaaclab.scene import InteractiveSceneCfg
-from isaaclab.sim.spawners.from_files.from_files_cfg import GroundPlaneCfg, UsdFileCfg
 from isaaclab.utils import configclass
-from isaaclab.utils.assets import ISAAC_NUCLEUS_DIR
 from tasks.common_config import   CameraBaseCfg  # isort: skip
 import os
 project_root = os.environ.get("PROJECT_ROOT")
@@ -18,37 +16,38 @@ class TableCylinderSceneCfgWH(InteractiveSceneCfg): # inherit from the interacti
     """object table scene configuration class
     defines a complete scene containing robot, object, table, etc.
     """
-      # 1. room wall configuration - simplified configuration to avoid rigid body property conflicts
-    room_walls = AssetBaseCfg(
-        prim_path="/World/envs/env_.*/Room",
-        init_state=AssetBaseCfg.InitialStateCfg(
-            pos=[0.0, 0.0, 0],  # room center point
-            rot=[1.0, 0.0, 0.0, 0.0]
-        ),
-        spawn=UsdFileCfg(
-            usd_path=f"{project_root}/assets/objects/small_warehouse/small_warehouse_digital_twin.usd",
+    # 1. floor primitive (replaces warehouse USD for better FPS)
+    floor = AssetBaseCfg(
+        prim_path="/World/envs/env_.*/Floor",
+        init_state=AssetBaseCfg.InitialStateCfg(pos=[0.0, 0.0, -0.05]),
+        spawn=sim_utils.CuboidCfg(
+            size=(20.0, 20.0, 0.1),
+            rigid_props=sim_utils.RigidBodyPropertiesCfg(kinematic_enabled=True),
+            collision_props=sim_utils.CollisionPropertiesCfg(),
+            visual_material=sim_utils.PreviewSurfaceCfg(diffuse_color=(0.4, 0.4, 0.4)),
         ),
     )
 
-
-        # 1. table configuration
+    # 2. table configuration (primitive boxes replacing USD meshes)
     packing_table1 = AssetBaseCfg(
-        prim_path="/World/envs/env_.*/PackingTable_1",    # table in the scene
-        init_state=AssetBaseCfg.InitialStateCfg(pos=[-2.35644,-3.45572,-0.2],   # initial position [x, y, z]
-                                                rot=[0.70091, 0.0, 0.0, 0.71325]), # initial rotation [x, y, z, w]
-        spawn=UsdFileCfg(
-            usd_path=f"{project_root}/assets/objects/PackingTable_2/PackingTable.usd",    # table model file
-            rigid_props=sim_utils.RigidBodyPropertiesCfg(kinematic_enabled=True),    # set to kinematic object
+        prim_path="/World/envs/env_.*/PackingTable_1",
+        init_state=AssetBaseCfg.InitialStateCfg(pos=[-2.35644, -3.45572, 0.4]),
+        spawn=sim_utils.CuboidCfg(
+            size=(1.2, 0.8, 0.8),
+            rigid_props=sim_utils.RigidBodyPropertiesCfg(kinematic_enabled=True),
+            collision_props=sim_utils.CollisionPropertiesCfg(),
+            visual_material=sim_utils.PreviewSurfaceCfg(diffuse_color=(0.6, 0.4, 0.2)),
         ),
     )
 
     packing_table2 = AssetBaseCfg(
-        prim_path="/World/envs/env_.*/PackingTable_2",    # table in the scene
-        init_state=AssetBaseCfg.InitialStateCfg(pos=[-3.97225,-4.3424,-0.2],   # initial position [x, y, z]
-                                                rot=[1.0, 0.0, 0.0, 0.0]), # initial rotation [x, y, z, w]
-        spawn=UsdFileCfg(
-            usd_path=f"{project_root}/assets/objects/PackingTable/PackingTable.usd",    # table model file
-            rigid_props=sim_utils.RigidBodyPropertiesCfg(kinematic_enabled=True),    # set to kinematic object
+        prim_path="/World/envs/env_.*/PackingTable_2",
+        init_state=AssetBaseCfg.InitialStateCfg(pos=[-3.97225, -4.3424, 0.4]),
+        spawn=sim_utils.CuboidCfg(
+            size=(1.2, 0.8, 0.8),
+            rigid_props=sim_utils.RigidBodyPropertiesCfg(kinematic_enabled=True),
+            collision_props=sim_utils.CollisionPropertiesCfg(),
+            visual_material=sim_utils.PreviewSurfaceCfg(diffuse_color=(0.6, 0.4, 0.2)),
         ),
     )
     # # Object

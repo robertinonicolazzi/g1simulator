@@ -26,10 +26,10 @@ class SensorPresets:
             offset=RayCasterCfg.OffsetCfg(pos=(0.0, 0.0, 0.1)), # Offset from head link
             attach_yaw_only=False,
             pattern_cfg=patterns.LidarPatternCfg(
-                channels=32,
-                vertical_fov_range=(-7.0, 52.0),
+                channels=1,
+                vertical_fov_range=(0.0, 0.0),
                 horizontal_fov_range=(-180.0, 180.0),
-                horizontal_res=0.2, # Approximate resolution
+                horizontal_res=0.5, # Resolution for 2D SLAM
             ),
             debug_vis=False,
             mesh_prim_paths=["/World/envs/env_0"],
